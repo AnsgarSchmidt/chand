@@ -10,7 +10,7 @@ class HandTranslate:
                               "Bird"    :[0,0,4,0,0],
                               "DrEvil"  :[0,0,0,0,4]
                              }
-        self._finger_name = ["Thump","Index","Middle","Ring","Pinkie"]
+        self._finger_name = ["thump","index","middle","ring","pinkie"]
         self._version = 0.01
 
     def getVersion(self):
@@ -27,7 +27,7 @@ class HandTranslate:
             raise NotImplementedError("Command not implemented")
         rlist = []
         for i in range(5):
-            rlist.append(("Hand/"+self._finger_name[i], self._command_list[command][i]))
+            rlist.append(("hand/"+self._finger_name[i], self._command_list[command][i]))
         return rlist
 
 if __name__ == "__main__":
