@@ -1,4 +1,5 @@
 import paho.mqtt.publish as publish
+import datetime
 
 class HandTranslate:
 
@@ -11,7 +12,7 @@ class HandTranslate:
                               "DrEvil"  :[0,0,0,0,4]
                              }
         self._finger_name = ["thump","index","middle","ring","pinkie"]
-        self._version = 0.01
+        self._version = 0.02
 
     def getVersion(self):
         return self._version
@@ -23,18 +24,45 @@ class HandTranslate:
         return self._command_list.keys()
 
     def translate(self, command):
+
         if command not in self._command_list:
             raise NotImplementedError("Command not implemented")
+
         rlist = []
+        clist = []
+
+        if command == "Time":
+            clist = self._getTimeArray()
+        else:
+            clist = self._command_list[command]
+
         for i in range(5):
-            rlist.append(("hand/"+self._finger_name[i], self._command_list[command][i]))
+            rlist.append(("hand/"+self._finger_name[i], clist[i]))
+
         return rlist
 
+    def _getTimeArray(self):
+        now      = datetime.datetime.now()
+        intval   = now.hour * 100 + now.minute
+        intarray = []
+
+        while intval:
+            intarray.append(intval % 5)
+            intval=intval / 5
+
+        return intarray
+
 if __name__ == "__main__":
-    print "Testing Hand translate"
+
     myHand = HandTranslate()
+
     print myHand.getHandHelp()
+
     for i in myHand.getHandCommands():
         print "Command for controlling the hand: %s" % i
+
+    for i in myHand.translate("Time"):
+        publish.single(i[0], i[1], hostname="c-beam.cbrp3.c-base.org")
+
     for i in myHand.translate("Bird"):
         publish.single(i[0], i[1], hostname="c-beam.cbrp3.c-base.org")
